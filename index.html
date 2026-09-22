@@ -181,6 +181,36 @@
   .fill-line{border-bottom:1px solid #8fc4bf;display:inline-block;min-width:170px;height:13px;margin:0 4px;}
   .fill-line.short{min-width:46px;}
 
+  /* ===== Bloco de controle de andamento (padrão fixo, preenchimento manual) ===== */
+  table.tracking-table{
+    width:100%;border-collapse:collapse;font-size:12.3px;margin-bottom:16px;
+    border:1.5px solid var(--ink);
+  }
+  table.tracking-table td{
+    border:1px solid var(--ink);padding:5px 8px;vertical-align:middle;
+  }
+  table.tracking-table .tk-label{font-weight:700;color:var(--ink);white-space:nowrap;}
+  table.tracking-table .tk-atacado{color:var(--danger);font-weight:800;font-style:italic;white-space:nowrap;}
+  table.tracking-table .tk-andamento-row td{
+    background:#eef2f2;color:var(--danger);font-weight:800;text-align:center;
+    text-transform:uppercase;letter-spacing:.03em;
+  }
+  table.tracking-table .tk-check{display:inline-flex;align-items:center;gap:4px;margin-right:14px;white-space:nowrap;font-weight:700;}
+  table.tracking-table .tk-check input{
+    width:14px;height:14px;appearance:none;-webkit-appearance:none;
+    border:1.5px solid var(--ink);border-radius:2px;background:#fff;cursor:pointer;position:relative;vertical-align:middle;
+  }
+  table.tracking-table .tk-check input:checked{background:var(--navy);border-color:var(--navy);}
+  table.tracking-table .tk-check input:checked::after{
+    content:'✓';color:#fff;font-size:10px;font-weight:700;position:absolute;top:-2px;left:1px;line-height:1;
+  }
+  table.tracking-table .tk-check.ok{color:var(--ok);}
+  table.tracking-table .tk-check.cancel{color:var(--danger);}
+  table.tracking-table .tk-uniso{color:var(--navy);}
+  table.tracking-table .tk-date{white-space:nowrap;}
+  table.tracking-table .tk-date .fill-line.short{min-width:30px;border-bottom:1px solid var(--ink);}
+  table.tracking-table .tk-fill{border-bottom:1px solid var(--ink);display:inline-block;min-width:120px;height:13px;margin:0 4px;}
+
   table.sheet-table{width:100%;border-collapse:collapse;font-size:12.3px;}
   table.sheet-table th{background:var(--navy);color:#fff;padding:7px 6px;font-size:10.3px;text-transform:uppercase;text-align:left;letter-spacing:.02em;}
   table.sheet-table td{padding:6px 6px;border-bottom:1px solid var(--border);}
@@ -330,6 +360,74 @@
     </div>
 
     <div id="sheet">
+      <table class="tracking-table">
+        <tbody>
+          <tr>
+            <td style="width:60%;">
+              <span class="tk-atacado">PEDIDO ATACADO</span>
+              <span class="tk-check tk-uniso"><input type="checkbox"> UNISO</span>
+              <span class="tk-check"><input type="checkbox"> SO LOVER</span>
+            </td>
+            <td><span class="tk-label">CLIENTE:</span> <span class="tk-fill" style="min-width:220px;"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">ID(S) PEDIDO(S)</span> <span class="tk-fill"></span> / <span class="tk-fill" style="min-width:60px;"></span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span id="tk_ano1"></span></td>
+          </tr>
+          <tr class="tk-andamento-row">
+            <td colspan="2">ANDAMENTO</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="tk-label">REVISÃO FATURAMENTO:</span>
+              <span class="tk-check ok"><input type="checkbox"> OK</span>
+              <span class="tk-check cancel"><input type="checkbox"> CANCELADO</span>
+            </td>
+            <td>
+              <span class="tk-label">FORM. PAGAMENTO</span>
+              <span class="tk-check"><input type="checkbox"> PIX/CRÉDITO</span>
+              <span class="tk-check"><input type="checkbox"> BOLETO</span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="tk-label">ANÁLISE FINANCEIRO:</span>
+              <span class="tk-check ok"><input type="checkbox"> OK</span>
+              <span class="tk-check cancel"><input type="checkbox"> SEM ANÁLISE</span>
+            </td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">ENVIADO P/ ESTOQUE</span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">SEPARADO</span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">INFORMATIVO</span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">PAGAMENTO</span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">NF</span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">AGENDAR COLETA/ENTREGA</span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+          <tr>
+            <td><span class="tk-label">DESPACHADO/ENTREGUE</span></td>
+            <td class="tk-date"><span class="tk-label">DATA</span> <span class="fill-line short"></span>/<span class="fill-line short"></span>/<span class="tk-ano"></span></td>
+          </tr>
+        </tbody>
+      </table>
+
       <div class="sheet-headcard">
         <div style="flex:1;min-width:0;">
           <p class="sheet-title">Ordem de Separação • Pedido <span id="s_pedido"></span></p>
@@ -713,6 +811,15 @@ $('btnBack').addEventListener('click', () => {
 });
 
 $('btnPrint').addEventListener('click', () => window.print());
+
+/* Preenche automaticamente o ano atual nos campos de data do bloco de
+   controle de andamento (padrão fixo, preenchimento manual do dia/mês). */
+(function fillTrackingYear(){
+  const ano = new Date().getFullYear();
+  const anoEl = $('tk_ano1');
+  if (anoEl) anoEl.textContent = ano;
+  document.querySelectorAll('.tk-ano').forEach(el => { el.textContent = ano; });
+})();
 </script>
 </body>
 </html>
