@@ -1,0 +1,69 @@
+Conversor de Romaneio → Ordem de Separação (UNISO)
+
+Aplicativo web, 100% client-side (roda inteiro no navegador, sem servidor e sem envio de dados a terceiros), que transforma o layout atual do pedido de venda (romaneio/nota de separação) em uma Ordem de Separação mais clara, com tripla checagem (Qtde Separada + Separado + OK), resultado final e campo de observação — no padrão visual UNISO, seguindo o layout de referência que você enviou (o mesmo modelo do seu app reposicao-uniso).
+
+O que o app faz
+Importa o pedido a partir de um PDF (com texto selecionável, exportado do ERP) ou de texto colado manualmente.
+Extrai automaticamente: Nº do Pedido, Data da Venda, Representante, Razão Social, Código do Cliente, e a tabela de itens (Código, Referência, Qtd., Setor, Produto).
+Apresenta tudo em campos editáveis para você conferir e corrigir antes de gerar o documento final — nenhum dado é usado sem revisão.
+Gera a folha de separação final, pronta para impressão ou para salvar como PDF (Ctrl+P / Cmd+P no navegador), seguindo o layout do seu modelo de referência:
+Cartão de cabeçalho com título "ORDEM DE SEPARAÇÃO • PEDIDO Nº", contagem de SKUs/unidades, prioridade, e os dados do pedido (Data da venda, Representante, Razão social, Código do cliente);
+Linhas de Separação e Conferência, cada uma com campo para nome do colaborador, início e fim;
+Tabela com Seq., Código e Referência (em negrito, fonte monoespaçada para facilitar a leitura), Produto, Qtd. pedida, Qtde Separada (para escrever à mão), e checkboxes de "Separado" e "OK" — a tripla checagem que você pediu;
+Resultado final em botões de opção única: Completo / Falta / Divergência / Avaria / Não localizado;
+Campo de Ocorrência/Observação;
+Serviço de transporte (ex.: "Nosso carro", "Cliente retira", nome de transportadora) — extraído automaticamente do PDF quando presente.
+Confere automaticamente os totais: o app extrai do PDF o "Total de Códigos/Linhas" e a "Qtde Total" declarados pelo sistema (linha "TOTAL DE CÓDIGOS/LINHAS: X QTDE TOTAL: Y") e compara com o que foi efetivamente reconhecido na tabela de itens. Se bater, mostra uma confirmação verde; se divergir, mostra um aviso amarelo — útil para pegar linhas que a extração automática não reconheceu.
+Mostra o arquivo selecionado: ao escolher ou arrastar um PDF, o nome do arquivo aparece confirmado logo abaixo da área de upload, com um botão "✕" para remover a seleção e escolher outro arquivo antes de extrair os dados.
+Botão "Limpar dados": disponível nas Etapas 1, 3 e 4, apaga tudo (arquivo selecionado, texto colado, campos do cabeçalho e itens da tabela) e volta o app ao estado inicial — útil se alguém importar o pedido errado e precisar recomeçar do zero.
+Limitação importante — leia antes de usar
+
+A extração automática funciona bem quando o PDF tem texto selecionável (arquivo gerado diretamente pelo ERP/sistema). Se o PDF for uma foto digitalizada do papel (como o modelo atual, com anotações à caneta), a extração de texto não é confiável — nesses casos, use a opção "Preencher manualmente" ou copie e cole o texto do pedido na caixa de colagem. O app sempre exibe os campos para conferência manual antes de fechar o documento, exatamente para evitar erro de leitura automática.
+
+Como publicar no GitHub Pages (visualização pública)
+Crie um repositório novo no GitHub (pode ser público ou privado com Pages habilitado no plano Pro/Team).
+Envie o arquivo index.html para a raiz do repositório (pelo site do GitHub: "Add file" → "Upload files", ou via git add / git commit / git push).
+No repositório, vá em Settings → Pages.
+Em "Build and deployment", selecione Deploy from a branch, escolha a branch main (ou master) e a pasta / (root).
+Salve. Em alguns minutos o GitHub fornecerá uma URL pública, no formato: https://<seu-usuario>.github.io/<nome-do-repositorio>/
+Essa URL pode ser compartilhada com quem for fazer a separação de mercadorias — basta abrir no navegador (funciona em celular e computador).
+
+Não é necessário nenhum backend, banco de dados ou custo de hospedagem — o GitHub Pages é gratuito para repositórios públicos.
+
+Estrutura do arquivo
+index.html — aplicativo completo (HTML + CSS + JavaScript em um único arquivo). Usa a biblioteca PDF.js (via CDN) apenas para ler o texto do PDF no próprio navegador do usuário — nenhum arquivo é enviado para servidores externos.
+Decisões de adaptação do layout de referência
+
+Seu modelo de referência (reposicao-uniso) é usado para reposição de lojas, então alguns campos não existem no romaneio de pedido de venda que este app converte. Conforme você confirmou:
+
+Sem coluna "Preço" — o romaneio de origem não traz preço por item.
+Sem campo "Prazo" — não existe essa informação nos pedidos de origem.
+Título simplificado: "ORDEM DE SEPARAÇÃO • PEDIDO Nº" (sem o segundo item do título, que no seu modelo era o nome da loja).
+Sem coluna "Endereço" de estoque — não fazia parte dos campos originais que você definiu.
+Personalização
+Logo: agora usando o arquivo de alta resolução que você enviou (sem cortes), aplicado tanto no cabeçalho do app quanto na folha final.
+Negrito: Código e Referência aparecem em negrito e fonte monoespaçada na tabela final, como no seu modelo de referência, para destacar essas informações.
+Lista de setores reconhecidos automaticamente: no início do arquivo index.html, na constante KNOWN_SETORES, estão os setores que o app já reconhece nas linhas de item (ex.: "BIJUTERIAS/ACESSORIO", "PAPELARIA", "CASA", "DECORAÇÃO"). Se novos setores aparecerem nos pedidos, basta adicioná-los a essa lista para melhorar a taxa de acerto automático — linhas com setor não reconhecido continuam sendo importadas, apenas ficam marcadas em amarelo para revisão manual.
+Setor composto (duas palavras separadas por "/"): confirmado com o pedido 014796 que o sistema de origem pode gerar Setor em duas partes na mesma coluna, ex.: "CASA / COZINHA" ou "DECORAÇÃO / FESTA" — isso é um formato válido do ERP, não um erro de leitura. O reconhecimento automático já aceita esse padrão: basta que a primeira palavra esteja na lista KNOWN_SETORES (ex.: "CASA", "DECORAÇÃO") que a segunda parte após a "/" é aceita automaticamente, sem precisar cadastrar cada combinação.
+Setor "NATAL": adicionado à lista KNOWN_SETORES após identificado no pedido 014530.
+Referência "quebrada" por falha de fonte do PDF de origem: em alguns pedidos (confirmado no 015014), o próprio arquivo PDF desenha os últimos caracteres de uma Referência com uma fonte/posição diferente, o que faz a extração de texto inserir um espaço no meio do código (ex.: "CPA-A5- 2605" em vez de "CPA-A5-2605"). Sem tratamento, isso "empurrava" a leitura e misturava a Referência com a Quantidade. O reconhecimento agora identifica esse padrão (um traço seguido de números, mesmo com espaço) e junta automaticamente os dois pedaços na Referência correta, sem afetar a Quantidade.
+Testes realizados
+Validação de sintaxe do JavaScript embutido (sem erros).
+Teste com o PDF real que você enviou (pedido 015033, "ESPELHO PARA SEPARAÇÃO DE MERCADORIAS" / CM037, layout 7): simulei em Node.js exatamente a mesma extração que o navegador faz com a biblioteca PDF.js e rodei o parser do app contra o texto extraído.
+Cabeçalho: Pedido, Data da Venda, Representante, Razão Social e Código do Cliente — 5 de 5 campos extraídos corretamente.
+Itens: 24 de 24 linhas reconhecidas corretamente (Código, Referência, Qtd., Setor, Produto).
+Durante esse teste identifiquei e corrigi um problema real: o PDF.js entrega os fragmentos de texto na ordem em que foram desenhados no arquivo, que nem sempre é da esquerda para a direita — sem ajuste, os campos do cabeçalho saíam embaralhados (ex.: "Venda Usuário Entrega MAIRA 16/09/2026" em vez de "Usuário MAIRA Venda 16/09/2026 Entrega"). Corrigi ordenando cada linha pela posição horizontal antes de montar o texto, e o resultado passou a ficar idêntico ao texto real do documento.
+Também ajustei a leitura do campo "Representante", que no romaneio real vem seguido de "Lote" (não previsto no meu exemplo inicial).
+Teste visual do novo layout: renderizei o app num navegador headless (Playwright/Chromium), simulei a geração da folha final com os dados reais do pedido 015033 e conferi visualmente o resultado lado a lado com o seu modelo de referência antes de entregar.
+Teste do "Serviço de Transporte" e da conferência de totais: extraí do PDF real as linhas "SERVIÇO DE TRANSPORTE: CLIENTE RETIRA" e "TOTAL DE CÓDIGOS/LINHAS: 24 QTDE TOTAL: 554" — ambas reconhecidas corretamente. Também testei o aviso de divergência simulando menos itens do que o declarado no PDF, e o alerta amarelo apareceu como esperado.
+Teste com o pedido 014796 (setor composto): você reportou que linhas com Setor em duas partes na mesma coluna (ex.: "CASA / COZINHA", "DECORAÇÃO / FESTA") estavam sendo marcadas para revisão manual. Extraí o texto real desse PDF (61 linhas, 918 unidades) e ajustei o reconhecimento de Setor para aceitar esse formato. Resultado após o ajuste: 61 de 61 linhas reconhecidas automaticamente, nenhuma marcada para revisão, soma de quantidades batendo com o total declarado no PDF (918), e todos os campos de cabeçalho (Pedido, Data, Representante, Razão Social, Código Cliente, Serviço de Transporte, Total de Linhas, Qtde Total) extraídos corretamente. Reconferi também o pedido 015033 usado nos testes anteriores para garantir que o ajuste não quebrou nada: continua 24 de 24 linhas corretas. Testei visualmente a folha final gerada com itens desse novo pedido (Playwright/Chromium) — layout e dados aparecem corretamente.
+Teste com o pedido 014530 (setor "NATAL"): você identificou 1 linha não reconhecida ("NATAL CADERNO BROCHURA PAUTADO..."). Extraí o texto real desse PDF (25 linhas, 362 unidades) e confirmei que o setor não cadastrado era exatamente "NATAL". Adicionei à lista KNOWN_SETORES e revalidei: 25 de 25 linhas reconhecidas, nenhuma marcada para revisão, soma de quantidades batendo com o total do PDF (362). Reconferi novamente os pedidos 015033 e 014796 para garantir que a inclusão não gerou regressão — ambos continuam 100% corretos.
+Teste do chip de arquivo selecionado e do botão "Limpar dados": simulei a seleção de um arquivo PDF e confirmei visualmente (captura de tela) que o nome aparece logo abaixo da área de upload, com opção de remover. Testei também o clique em "Limpar dados" a partir da Etapa 3 (com dados já preenchidos) e confirmei que o app volta ao estado inicial: arquivo, texto colado, campos do cabeçalho e itens da tabela são todos apagados, e as Etapas 2, 3 e 4 voltam a ficar ocultas.
+Teste com o pedido 015014 (referência quebrada pelo PDF): você reportou que a Referência de alguns itens aparecia incompleta e misturada com a Quantidade. Extraí o texto real desse PDF (29 linhas, 2.999 unidades) e confirmei a causa: o próprio arquivo insere um espaço no meio de 3 códigos (13275, 13276, 13277 — família "CPA-A5-..."). Após o ajuste: 29 de 29 linhas reconhecidas, nenhuma marcada para revisão, Referência e Quantidade corretas em todas as linhas (ex.: "CPA-A5-2605" com Qtd. 36, em vez de "CPA-A5-" com Qtd. 2605 e "36" perdido dentro do Produto), e os totais do PDF (29 linhas / 2.999 unidades) conferindo com o calculado. Reconferi também os pedidos 015033, 014796 e 014530 para garantir que não houve regressão — todos continuam 100% corretos.
+Sobre o campo "Serviço de Transporte"
+
+Fiz esse campo como texto livre (extraído automaticamente, mas editável) justamente porque ele pode assumir formatos variados — "NOSSO CARRO", "CLIENTE RETIRA", nome de uma transportadora terceirizada, etc. O app extrai o que estiver escrito após "SERVIÇO DE TRANSPORTE:" no PDF, sem exigir um formato fixo.
+
+Limitação observada no próprio PDF de origem (não é um erro do app)
+
+Em algumas linhas, a descrição do produto no PDF original já vem cortada pela ERP antes do fim (ex.: "KIT ADESIVO DECORATIVO DIÁRIO DAS ESTAÇÕES 6UN KMS" sem o "-007" final). Isso acontece no próprio arquivo fonte, não na extração — o app importa o texto exatamente como está disponível no PDF. Como a tabela de itens é editável antes de gerar a folha final, basta completar manualmente esses casos pontuais.
